@@ -3,26 +3,26 @@ package com.example.jokenpo
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.jokenpo.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         val binding = ActivityMainBinding.inflate(layoutInflater)
-        val toolbar = binding.toolbar
-
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
 
-        val activity_jogadasIntent = Intent(this, MainActivity2::class.java)
-
-        binding.button.setOnClickListener {
-            startActivity(activity_jogadasIntent)
-        }
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+        as NavHostFragment
+        navController = navHostFragment.navController
     }
-    }
+}
 
 

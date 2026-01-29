@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/inicioFragment">
+
+    <fragment
+        android:id="@+id/inicioFragment"
+        android:name="com.example.jokenpo.InicioFragment"
+        android:label="fragment_inicio"
+        tools:layout="@layout/fragment_inicio" >
+        <action
+            android:id="@+id/action_inicioFragment_to_jogo"
+            app:destination="@id/jogo" />
+    </fragment>
+    <navigation android:id="@+id/jogo"
+        app:startDestination="@id/jogadasFragment2">
+        <fragment
+            android:id="@+id/jogadasFragment2"
+            android:name="com.example.jokenpo.JogadasFragment"
+            android:label="JogadasFragment"
+            tools:layout="@layout/fragment_jogadas">
+            <action
+                android:id="@+id/action_jogadasFragment2_to_resultadoFragment2"
+                app:destination="@id/resultadoFragment2" />
+        </fragment>
+        <fragment
+            android:id="@+id/resultadoFragment2"
+            android:name="com.example.jokenpo.ResultadoFragment"
+            android:label="ResultadoFragment"
+            tools:layout="@layout/fragment_resultado">
+            <argument
+                android:name="jogadasUsuario" app:argType="string"/>
+            <action
+                android:id="@+id/action_resultadoFragment2_to_jogadasFragment2"
+                app:destination="@id/jogadasFragment2"/>
+                />
+        </fragment>
+        <action
+            android:id="@+id/action_global_inicioFragment"
+            app:destination="@id/inicioFragment" />
+    </navigation>
+</navigation>

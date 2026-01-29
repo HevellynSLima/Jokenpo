@@ -7,11 +7,11 @@
         android:icon="@drawable/ic_home"/>
 
     <item
-        android:id="@+id/jogador1"
+        android:id="@+id/jogadasFragment2"
             android:title="Jogador 1"
             android:icon="@drawable/ic_jogador1"/>
     <item
-        android:id="@+id/resultado"
+        android:id="@+id/resultadoFragment2"
             android:title="Resultado"
             android:icon="@drawable/ic_trofeu"/>
   
