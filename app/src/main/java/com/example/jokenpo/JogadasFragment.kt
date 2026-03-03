@@ -1,5 +1,6 @@
 package com.example.jokenpo
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,20 +17,26 @@ import com.google.android.material.snackbar.Snackbar
 class JogadasFragment : Fragment() {
 
     private lateinit var binding: FragmentJogadasBinding
+    private lateinit var listener: JogadorListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as JogadorListener   // ❤️ Activity recebe a jogada
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentJogadasBinding.inflate(inflater, container, false)
 
         val activity = requireActivity() as AppCompatActivity
         activity.setSupportActionBar(binding.toolbar2)
 
-        setupToolBar(activity)
+        setupToolbar(activity)
         setupDrawer()
-        setupBottomNavegation()
+        setupBottomNavigation()
         setupSpinner(savedInstanceState)
 
         return binding.root
@@ -42,48 +49,52 @@ class JogadasFragment : Fragment() {
             requireContext(),
             R.layout.spinner_item,
             opcoes
-        ).also { it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         binding.spinner.adapter = adapter
 
-        // ✅ RESTAURAR ESTADO — AGORA NO LUGAR CERTO
+
         val jogadaSalva = savedInstanceState?.getString("jogada")
         if (jogadaSalva != null) {
             val index = opcoes.indexOf(jogadaSalva)
-            if (index >= 0) binding.spinner.setSelection(index)
+            if (index >= 0) {
+                binding.spinner.setSelection(index)
+                listener.onPlaySelected(jogadaSalva)   // 💥 NECESSÁRIO
+            }
         }
 
-        // Listener normal
+
         var firstFire = true
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+
                 if (firstFire) { firstFire = false; return }
 
                 val jogada = opcoes[position]
-                Snackbar.make(binding.root, "Você escolheu: $jogada",
-                    Snackbar.LENGTH_SHORT)
-                    .show()
+
+                // >>> ENVIA PARA A ACTIVITY <<<
+                listener.onPlaySelected(jogada)
+
+                Snackbar.make(binding.root, "Você escolheu: $jogada", Snackbar.LENGTH_SHORT).show()
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {}
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
         val jogadaAtual = binding.spinner.selectedItem.toString()
         outState.putString("jogada", jogadaAtual)
     }
 
-    private fun setupBottomNavegation() {
-        binding.bottomNav.setOnItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
+    private fun setupBottomNavigation() {
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
                 R.id.resultadoFragment2 -> {
-                    val escolha = binding.spinner.selectedItem.toString()
-                    val action =
-                        JogadasFragmentDirections.actionJogadasFragment2ToResultadoFragment2(escolha)
-                    findNavController().navigate(action)
+                    // sem args → resultado pega da Activity
+                    findNavController().navigate(R.id.resultadoFragment2)
                     true
                 }
                 R.id.jogadasFragment2 -> true
@@ -97,27 +108,29 @@ class JogadasFragment : Fragment() {
             binding.root.openDrawer(GravityCompat.START)
         }
 
-        binding.navView.setNavigationItemSelectedListener { menuItem ->
+        binding.navView.setNavigationItemSelectedListener { item ->
             binding.root.closeDrawers()
-            when (menuItem.itemId) {
+            when (item.itemId) {
+
                 R.id.inicio -> {
                     findNavController().popBackStack()
                     true
                 }
+
                 R.id.resultadoFragment2 -> {
-                    val escolha = binding.spinner.selectedItem.toString()
-                    val action =
-                        JogadasFragmentDirections.actionJogadasFragment2ToResultadoFragment2(escolha)
-                    findNavController().navigate(action)
+                    findNavController().navigate(R.id.resultadoFragment2)
                     true
                 }
+
                 else -> false
             }
         }
     }
 
-    private fun setupToolBar(activity: AppCompatActivity) {
-        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        activity.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_)
+    private fun setupToolbar(activity: AppCompatActivity) {
+        activity.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu_)
+        }
     }
 }

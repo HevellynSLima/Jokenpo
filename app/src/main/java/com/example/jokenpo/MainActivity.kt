@@ -1,15 +1,14 @@
 package com.example.jokenpo
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.jokenpo.databinding.ActivityMainBinding
 
+class MainActivity : AppCompatActivity(), JogadorListener {
 
-class MainActivity : AppCompatActivity() {
-
+    var currentPlay: String = "Pedra"
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +19,13 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
-        as NavHostFragment
+                    as NavHostFragment
+
         navController = navHostFragment.navController
     }
+
+    // ❤️ Agora faz parte da interface JogadorListener
+    override fun onPlaySelected(selectedPlay: String) {
+        currentPlay = selectedPlay
+    }
 }
-
-
